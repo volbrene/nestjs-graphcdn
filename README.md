@@ -1,6 +1,6 @@
 <p align="center">
-  <a href="https://nestjs.com/" target="blank"><img src="https://kamilmysliwiec.com/public/nest-logo.png#1" alt="Nest Logo" />   </a>
-  <a href="https://graphcdn.io" target="_blank"><img src="https://lever-client-logos.s3.us-west-2.amazonaws.com/1edec3d1-1149-485d-8a88-8c897c5c84ca-1624441726076.png" width="380"></a>
+  <a href="https://nestjs.com/" target="blank"><img src="https://kamilmysliwiec.com/public/nest-logo.png#1"  height="150" alt="Nest Logo" />   </a>
+  <a href="https://graphcdn.io" target="_blank"><img src="https://res.cloudinary.com/crunchbase-production/image/upload/c_lpad,f_auto,q_auto:eco,dpr_1/soeczselxya3vtswcxv5" height="150"></a>
 </p>
 
 <p align="center">GraphCDN Module for Nest framework</p>
