@@ -25,15 +25,15 @@ $ npm i --save nestjs-graphcdn
 
 ### Using purge Interceptor
 
-> app.controller.ts
+> app.resolver.ts
 
 ```ts
+  @Mutation()
   @UseInterceptors(new GraphCDNPurgeInterceptor({
         serviceName: "<service-name>",
         purgeToken: "<token>",
   }))
-  @Get('/some/route')
-  public async someRoute() {
+  async upvotePost(@Args('postId') postId: number) {
     ...
   }
 ```
@@ -51,7 +51,6 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 import { GraphCDNPurgeInterceptor } from "nestjs-graphcdn";
 
 @Module({
-  imports: [RavenModule],
   providers: [
     {
       provide: APP_INTERCEPTOR,
@@ -69,14 +68,14 @@ export class ApplicationModule {}
 
 To purge some queries you can now use the `GraphCDNPurgeQuery` decorator.
 
-> app.controller.ts
+> app.resolver.ts
 
 ```ts
 import { GraphCDNPurgeQuery } from "nestjs-graphcdn"
 
-  @Get('/some/route')
-  @GraphCDNPurgeQuery(["allPosts"])
-  public async someRoute()
-    ...
-  }
+@Mutation()
+@GraphCDNPurgeQuery(["allPosts"])
+async upvotePost(@Args('postId') postId: number) {
+  ...
+}
 ```
