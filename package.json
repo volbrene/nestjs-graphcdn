@@ -17,8 +17,11 @@
     "version": "conventional-changelog -p angular -i CHANGELOG.md -s -r 0",
     "start": "ts-node -r tsconfig-paths/register example/src/main.ts"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "nestjs",
+    "graphcdn"
+  ],
+  "author": "volbrene",
   "license": "ISC",
   "optionalDependencies": {},
   "dependencies": {
