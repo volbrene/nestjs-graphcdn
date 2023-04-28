@@ -64,7 +64,7 @@ import { GraphCDNPurgeInterceptor } from "nestjs-graphcdn";
 export class ApplicationModule {}
 ```
 
-### Use purge decorator
+### Use purge query decorator
 
 To purge some queries you can now use the `GraphCDNPurgeQuery` decorator.
 
@@ -74,7 +74,23 @@ To purge some queries you can now use the `GraphCDNPurgeQuery` decorator.
 import { GraphCDNPurgeQuery } from "nestjs-graphcdn"
 
 @Mutation()
-@GraphCDNPurgeQuery(["allPosts"])
+@GraphCDNPurgeQuery(["<query-name>"])
+async upvotePost(@Args('postId') postId: number) {
+  ...
+}
+```
+
+### Use purge type decorator
+
+To purge some type you can now use the `GraphCDNPurgeType` decorator.
+
+> app.resolver.ts
+
+```ts
+import { GraphCDNPurgeType } from "nestjs-graphcdn"
+
+@Mutation()
+@GraphCDNPurgeType("<type-name>", "<type-id-reference>")
 async upvotePost(@Args('postId') postId: number) {
   ...
 }

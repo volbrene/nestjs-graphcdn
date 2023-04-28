@@ -28,8 +28,21 @@ export class GraphCDNPurgeInterceptor implements NestInterceptor {
           context.getHandler()
         );
 
+        const graphcdnType = this.reflector.get<{
+          type: string;
+          idReference: string | number;
+        }>("graphcdn-purge-type", context.getHandler());
+
         if (graphcdnQueries) {
           await this.purgeQueries(graphcdnQueries);
+        }
+
+        if (graphcdnType?.type) {
+          await this.purgeType(
+            graphcdnType?.type,
+            graphcdnType?.idReference,
+            data
+          );
         }
 
         return data;
@@ -42,6 +55,65 @@ export class GraphCDNPurgeInterceptor implements NestInterceptor {
    */
   async purgeQueries(queries: string[]): Promise<Boolean> {
     return new Promise(async (resolve) => {
+      const query = `mutation { _purgeQuery(queries: [${queries.join(",")}]) }`;
+
+      const successfull = await this.sendPurgeRequest(query);
+
+      if (successfull)
+        this.logger.log(
+          `Cache was successfully cleared for the queries: ${queries.join(",")}`
+        );
+
+      resolve(true);
+    });
+  }
+
+  /**
+   * purge type
+   */
+  async purgeType(
+    type: string,
+    idReference: string | number,
+    data: any
+  ): Promise<Boolean> {
+    return new Promise(async (resolve) => {
+      if (idReference && !data[idReference]) {
+        this.logger.error(
+          `GraphCDN Purge Error: Id reference "${idReference}" not found in response object!`
+        );
+
+        resolve(false);
+        return;
+      }
+
+      const id = idReference && data[idReference];
+      const purgeMutationName = `purge${
+        type.toString().charAt(0).toUpperCase() + type.toString().slice(1)
+      }`;
+      const query = `mutation {
+          ${purgeMutationName}${id ? `(id: ["${id.toString()}"])` : ""}
+        }`;
+
+      const successfull = await this.sendPurgeRequest(query);
+
+      if (successfull)
+        this.logger.log(
+          `Cache was successfully cleared for the type: ${type.toString()}${
+            id ? ` | ID: ${id.toString()}` : ""
+          }`
+        );
+
+      resolve(true);
+    });
+  }
+
+  /**
+   *
+   * @param query
+   * @returns
+   */
+  private async sendPurgeRequest(query: string) {
+    return new Promise(async (resolve) => {
       if (!this.options.serviceName || !this.options.purgeToken) {
         this.logger.error(`GraphCDN missing serviceName and purgeToken`);
 
@@ -53,9 +125,7 @@ export class GraphCDNPurgeInterceptor implements NestInterceptor {
         const { data } = await axios.post(
           `https://admin.graphcdn.io/${this.options.serviceName}`,
           {
-            query: `mutation {
-            _purgeQuery(queries: [${queries.toString()}])
-      }`,
+            query,
           },
           {
             headers: {
@@ -73,10 +143,6 @@ export class GraphCDNPurgeInterceptor implements NestInterceptor {
           resolve(false);
           return;
         }
-
-        this.logger.log(
-          `Cache was successfully cleared for the quries: ${queries.toString()}`
-        );
 
         resolve(true);
       } catch (e) {
